@@ -1,0 +1,214 @@
+<html>
+  <head>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  </head>
+  <body>
+
+  <div class="container">
+    <h1 class="title">
+      PowerPercentile
+    </h1>
+  </div>
+
+  <div class="container" id="resultsContainer">
+    <h4 class="results" id="results">
+      Fill in the form below to see where you stand.
+    </h4>
+  </div>
+
+  <div class="form container">
+    <div class="column">
+     <label>Squat</label>
+     <input type="squat" class="form-control" id="squatInput" placeholder="Enter Squat">
+    </div>
+    <div class="column">
+     <label>Bench</label>
+     <input type="bench" class="form-control" id="benchInput" placeholder="Enter Bench">
+    </div>
+    <div class="column">
+     <label>Deadlift</label>
+     <input type="deadlift" class="form-control" id="deadliftInput" placeholder="Enter Deadlift">
+    </div>
+    <label class="label">
+      Gender
+    </label>
+    <select class="form-control" id="genderSelect">
+      <option value="male">   Male   </option>
+      <option value="female"> Female </option>
+    </select>
+    <label class="label">
+      Weight Class (kg)
+    </label>
+    <select class="form-control" id="weightSelect">
+    </select>
+  </div>
+
+  <div class="container">
+    <div>
+      <div class="compileButton" onclick="main()"> Where do I stand? </div>
+    </div>
+  </div>
+
+  </body>
+
+  <footer class="footer">
+    <b>
+      PowerliftingPercentile 2020 - Compare powerlifting abilities to your competitors.
+    </b>
+  </footer>
+</html>
+
+<style>
+
+  .label {
+    padding-top: 15px;
+  }
+
+  .footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: gray;
+    color: white;
+    text-align: center;
+    border-top: solid black;
+  }
+
+  .compileButton {
+    border: solid gray;
+    text-align: center;
+    padding: 20px;
+    border-radius: 5px;
+    background: #e6e6e6;
+    margin-top: 25px;
+  }
+
+  .compileButton:hover {
+    background: rgb(168,168,168);
+    background: linear-gradient(0deg, rgba(168,168,168,1) 0%, rgba(255,255,255,1) 100%);
+
+    cursor: pointer;
+  }
+
+  .results {
+    display: block;
+    text-align: left;
+    border: solid gray;
+    border-radius: 5px;
+    height: 450px;
+    padding: 10px;
+  }
+
+  .title {
+    display: block;
+    text-align: center;
+    border: solid black;
+    border-radius: 5px;
+
+    background: rgb(168,168,168);
+    background: linear-gradient(72deg, rgba(168,168,168,1) 0%, rgba(226,226,226,1) 47%, rgba(255,255,255,1) 74%, rgba(228,228,228,1) 90%);
+  }
+
+  .column {
+    float: left;
+    width: 33.33%;
+  }
+
+</style>
+
+<script>
+
+  //male/female weight classes
+  maWeights=["53", "59", "66", "74", "83", "93", "105", "120", "120+"];
+  feWeights=["43", "47", "52", "57", "63", "72", "84", "84+"];
+
+  genderSelect = document.getElementById("genderSelect");
+  weightSelect = document.getElementById("weightSelect");
+
+  squat    = document.getElementById("squatInput");
+  bench    = document.getElementById("benchInput");
+  deadlift = document.getElementById("deadliftInput");
+
+  results = document.getElementById("results");
+
+  const GRAPH_W = 300;
+  const GRAPH_H = 250;
+  const GRAPH_STYLE = "position: relative; top: -130; float: right;";
+  const GRAPH_SRC = "https://www.pngkey.com/png/full/238-2383266_line-graph-png-transparent-line-graph-png.png";
+
+  setWeights(maWeights);
+
+  function setWeights(weightArr){
+    $(weightSelect).empty();
+
+    weightArr.forEach(function(value){
+      option = document.createElement("option");
+
+      option.innerHTML = value.toString();
+
+      weightSelect.appendChild(option);
+    })
+  }
+
+  const capitalize = (s) => {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
+  genderSelect.onchange = function() {
+    setWeights(this.selectedIndex == 0 ? maWeights : feWeights);
+  }
+
+  function getGender()   { return capitalize(genderSelect.value); }
+
+  function getSquat()    { return parseInt(squat.value);        }
+  function getBench()    { return parseInt(deadlift.value);     }
+  function getWeight()   { return parseInt(weightSelect.value); }
+  function getDeadlift() { return parseInt(bench.value);        }
+  function getTotal()    { return getSquat() + getBench() + getDeadlift(); }
+
+  const provide = (o, s) => {
+    return !isNaN(o) ? o + "kg" : "Please provide a value for " + s;
+  }
+
+  const provideAlert = (o, s) => {
+    return !isNaN(o) ? null : alert("Please provide a value for " + s);
+  }
+
+  // Function that is called when the users submit the form.
+  function main() {
+    // Notify the user if they have forgotten to provide information,
+    // and show the information that they have provided.
+    $(results).html("Gender: "          + getGender()   +
+                    "<br>Weightclass: " + getWeight()   +
+                    "<br>Squat: "       + provide(getSquat(), "squat")    +
+                    "<br>Bench: "       + provide(getBench(), "bench")    +
+                    "<br>Deadlift: "    + provide(getDeadlift(), "deadlift") +
+                    "<br>Total: "       + provide(getTotal(), "squat bench and deadlift"));
+
+    provideAlert(getBench(),    "bench");
+    provideAlert(getSquat(),    "squat");
+    provideAlert(getDeadlift(), "deadlift");
+
+    generateGraph();
+  }
+
+  // fake graph generation, this is the placeholder for the graphs that will
+  // pin point for the user where they fall compared to their oponents.
+  function generateGraph(){
+    if(!isNaN(getTotal())){
+      var graph = document.createElement("IMG");
+
+      graph.width  = GRAPH_W;
+      graph.height = GRAPH_H;
+      graph.src    = GRAPH_SRC;
+      graph.style  = GRAPH_STYLE
+
+      document.getElementById("results").append(graph);
+    }
+  }
+
+</script>
